@@ -1,0 +1,45 @@
+name: Build HaxeFlixel Game
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Haxe
+        uses: krdlab/setup-haxe@v1
+        with:
+          haxe-version: 4.3.1
+      - name: Install dependencies
+        run: |
+          haxelib install flixel
+          haxelib install flixel-tools
+          haxelib run flixel-tools setup -y
+      - name: Build for Windows
+        run: |
+          haxe -hl bin/windows/Game.exe -cp source -main Main
+
+  build-android:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Haxe
+        uses: krdlab/setup-haxe@v1
+        with:
+          haxe-version: 4.3.1
+      - name: Install dependencies
+        run: |
+          haxelib install flixel
+          haxelib install flixel-tools
+          haxelib run flixel-tools setup -y
+          haxelib install lime
+          haxelib install openfl
+          haxelib run openfl setup -y
+      - name: Build for Android
+        run: |
+          haxelib run openfl build android
